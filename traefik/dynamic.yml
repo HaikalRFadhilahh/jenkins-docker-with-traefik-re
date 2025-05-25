@@ -1,0 +1,55 @@
+# Providers for Http Protocol
+http:
+  # Routers for Routing 
+  routers:
+    # Traefik Dashboard Routing with Http 
+    traefik-dashboard-router-http:
+      entryPoints:
+        - web-http
+      rule: "Host(`dashboard.local.haik.my.id`)"
+      middlewares:
+        - redirect-from-http-to-https
+      service: api@internal
+      
+    # Traefik Dashboard Routing with Https Scheme
+    traefik-dashboard-router-https:
+      entryPoints:
+        - web-https
+      rule: "Host(`dashboard.local.haik.my.id`)"
+      service: api@internal
+      tls:
+        certResolver: cert-resolver-lets-encrypt
+
+    # Jenkins Routing Http 
+    jenkins-router-http:
+      entryPoints:
+        - web-http
+      rule: "Host(`jenkins.local.haik.my.id`)"
+      middlewares:
+        - redirect-from-http-to-https
+      service: jenkins-service
+      
+    # Jenkins Routing Https Scheme
+    jenkins-router-https:
+      entryPoints:
+        - web-https
+      rule: "Host(`jenkins.local.haik.my.id`)"
+      service: jenkins-service
+      tls:
+        certResolver: cert-resolver-lets-encrypt
+  
+  # List Custom Middlewares
+  middlewares:
+  # Create Custom Middleware for Redirect Scheme to Https 
+    redirect-from-http-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: false
+
+  # List of Services 
+  services:
+    jenkins-service:
+      loadBalancer:
+        strategy: "p2c"
+        servers:
+          - url: "http://host.docker.internal:8080"

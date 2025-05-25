@@ -1,0 +1,52 @@
+# Declare Version of Docker Compose
+version: "3.9"
+
+services:
+  traefik-reverse-proxy:
+    image: traefik:3.4.0
+    container_name: traefik-reverse-proxy
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:443:443"
+    volumes:
+      - ${PWD}/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ${PWD}/traefik/dynamic.yml:/etc/traefik/dynamic.yml:rw
+      - traefik-config-volume:/etc/traefik:rw
+      - traefik-log-volume:/var/log:rw
+    restart: always
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    depends_on:
+      - jenkins-automation
+  jenkins-automation:
+    image: jenkins/jenkins:2.511-jdk17
+    container_name: jenkins-ci-ci-automation
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - jenkins-config-log-volume:/var/jenkins_home
+    environment:
+      - JAVA_OPTS="-Djava.util.logging.config.file=/var/jenkins_home/jenkins-log.properties"
+    restart: always
+
+volumes:
+  traefik-config-volume:
+    name: ${USER}-traefik-config-volume
+    driver: local
+    labels:
+      - platform=traefik
+      - fileType=configuration-file
+  traefik-log-volume:
+    name: ${USER}-traefik-log-volume
+    driver: local
+    labels:
+      - platform=traefik
+      - fileType=log-file
+  jenkins-config-log-volume:
+    name: ${USER}-jenkins-config-log-volume
+    driver: local
+    labels:
+      - platform=jenkins
+      - fileType=log-config-file

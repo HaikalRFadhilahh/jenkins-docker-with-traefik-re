@@ -1,0 +1,43 @@
+# Configuration EntryPoints from Outside Port HTTP and HTTPS
+entryPoints:
+  web-http:
+    address: ":8000"
+  
+  web-https:
+    address: ":443"
+
+# Enable Dashboard Traefik and Disabled Authentification with Insecure
+api:
+  dashboard: true
+  insecure: true
+
+# Certificate 
+certificatesResolvers:
+  cert-resolver-lets-encrypt:
+    acme:
+      email: your_cloudflare_email@example.com
+      storage: /etc/traefik/acme.json
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+         - "1.1.1.1:53"
+         - "8.8.8.8:53"
+        delayBeforeCheck: "0"
+
+# Traefik Logs
+log:
+  level: INFO
+  filePath: /var/log/traefik-sys-info-log
+  noColor: false
+  format: common
+
+accessLog:
+  filePath: /var/log/traefik-access-log
+  format: common
+    
+
+# Read Providers From File in `/etc/traefik/dynamic.yml` and using hot reload
+providers:
+  file:
+    filename: /etc/traefik/dynamic.yml
+    watch: true
