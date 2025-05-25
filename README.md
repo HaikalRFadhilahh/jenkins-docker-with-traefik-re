@@ -23,9 +23,13 @@ In the Pre-Installation stage you are required to create a domain or sub-domain 
 
 1. Setting Domain or Sub-Domain on Cloudflare
 
+![DNS Management Cloudflare](./assets/dns-management.png "DNS Management Cloudflare")
+
 You can create domains and sub-domains according to your server needs. The example above only works with my project, you can change it to your liking.
 
 2. Generate API Tokens in Cloudflare Account
+
+![Cloudflare API Tokens](./assets/user-api-tokens.png "Cloudflare API Tokens")
 
 You are required to generate an API Token (CF_DNS_API_TOKEN) with minimum access according to the image above. And customize the Zone and Domain configuration according to your own.
 
